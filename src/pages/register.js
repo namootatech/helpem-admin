@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
+import { Button, Spinner } from 'flowbite-react';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -42,6 +44,7 @@ export default function RegisterPage() {
     }
     // Handle form submission
     console.log('Form submitted:', formData);
+    setLoading(true);
     fetch('/api/register', {
       method: 'POST',
       headers: {
@@ -53,9 +56,11 @@ export default function RegisterPage() {
       .then((data) => {
         console.log('Success:', data);
         router.push('/login');
+        setLoading(false);
       })
       .catch((error) => {
         console.error('Error:', error);
+        setLoading(false);
       });
   };
 
@@ -181,12 +186,17 @@ export default function RegisterPage() {
             </div>
           </div>
           <div className='flex items-center justify-between'>
-            <button
-              className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
-              type='submit'
-            >
-              Register
-            </button>
+          <Button color="failure" type="submit">
+              {loading && (
+                <Spinner
+                  aria-label='Alternate spinner button example'
+                  size='sm'
+                />
+              )}
+              <span className='pl-3 pr-3'>
+                {loading ? 'Loading...' : 'Register'}
+              </span>
+            </Button>
           </div>
         </form>
         <p className='text-gray-600 text-xs mt-4'>

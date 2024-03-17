@@ -3,8 +3,10 @@ import axios from 'axios';
 import { BiMoney } from 'react-icons/bi';
 import Layout from '@/components/layout';
 import Datepicker from 'react-tailwindcss-datepicker';
+import { Button, Spinner } from 'flowbite-react';
 const TransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [value, setValue] = useState({
     startDate: null,
     endDate: null,
@@ -17,13 +19,16 @@ const TransactionsPage = () => {
 
   useEffect(() => {
     // Fetch transactions from /api/transaction/list
+    setLoading(true);
     axios
       .get('/api/transactions/list')
       .then((response) => {
         setTransactions(response.data.transactions);
+        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching transactions:', error);
+        setLoading(false);
       });
   }, []);
 
@@ -33,6 +38,7 @@ const TransactionsPage = () => {
   };
 
   const handleSearch = () => {
+    setLoading(true);
     // Handle search action with the specified date range
     console.log('Searching transactions with date range:', value);
     fetch(`/api/transactions/find-by-date-range?start=${value.startDate}&end=${value.endDate}`)
@@ -40,9 +46,11 @@ const TransactionsPage = () => {
         .then((data) => {
             console.log('Fetched transactions:', data);
             setTransactions(data.transactions);
+            setLoading(false);
         })
         .catch((error) => {
             console.error('Error fetching transactions:', error);
+            setLoading(false);
         });
   }
 
@@ -57,12 +65,19 @@ const TransactionsPage = () => {
             onChange={handleValueChange}
             showShortcuts={true}
           />
-          <button
-            className='bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg ml-4'
-            onClick={handleSearch}
-          >
-            Search
-          </button>
+          <div className='flex flex-col items-center justify-center w-44'>
+            <Button color="failure" onClick={handleSearch}>
+              {loading && (
+                <Spinner
+                  aria-label='Alternate spinner button example'
+                  size='sm'
+                />
+              )}
+              <span className='pl-3 pr-3'>
+                {loading ? 'Loading...' : 'Search'}
+              </span>
+            </Button>
+          </div>
           </div>
           <table className='w-full bg-gray-100 rounded-lg overflow-hidden mb-4'>
             <thead className='bg-gray-200 text-gray-700'>

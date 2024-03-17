@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import Cookies from 'js-cookie';
+import { Button, Spinner } from 'flowbite-react';
+
 
 function Login({login}) {
   const router = useRouter();
@@ -12,6 +14,7 @@ function Login({login}) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -27,6 +30,7 @@ function Login({login}) {
   };
 
   const handleSubmit = (e) => {
+    setLoading(true);
     e.preventDefault();
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,6 +50,7 @@ function Login({login}) {
     })
       .then((res) => res.json())
       .then((data) => {
+        setLoading(false);
         console.log('Success:', data);
         // Redirect to dashboard
         login(data);
@@ -53,6 +58,7 @@ function Login({login}) {
         router.push('/dashboard');
       })
       .catch((error) => {
+        setLoading(false);
         console.error('Error:', error);
       });
 
@@ -97,7 +103,17 @@ function Login({login}) {
           </div>
           <div className="flex justify-between items-center mb-4">
             <Link href="/forgot-password" className="text-blue-500 hover:underline">Forgot password?</Link>
-            <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Login</button>
+            <Button color="failure" type="submit">
+              {loading && (
+                <Spinner
+                  aria-label='Alternate spinner button example'
+                  size='sm'
+                />
+              )}
+              <span className='pl-3 pr-3'>
+                {loading ? 'Loading...' : 'Login'}
+              </span>
+            </Button>
           </div>
           <p className="text-gray-600">Not registered? <Link href="/register" className="text-blue-500 hover:underline">Create an account</Link></p>
         </form>

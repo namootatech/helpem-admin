@@ -7,7 +7,8 @@ import { AiOutlineEdit, AiOutlineDelete, AiOutlineCheckCircle, AiOutlineCloseCir
 import { BiSearch } from 'react-icons/bi';
 import { Dropdown } from 'flowbite-react';
 import { HiCog, HiCurrencyDollar, HiLogout, HiViewGrid } from 'react-icons/hi';
-
+import { Button, Spinner } from 'flowbite-react';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 const levelPrices = {
   Nourisher: 50,
   CaringPartner: 100,
@@ -44,23 +45,28 @@ const Subscriptions = () => {
     useState(false);
   const [query, setQuery] = useState('');
   const [findingUser, setFindingUser] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true)
     // Fetch subscriptions from /api/subscriptions/list
     fetch('/api/subscriptions/list')
       .then((res) => res.json())
       .then((data) => {
         console.log('Success:', data);
         setSubscriptions(data.subscriptions);
+        setLoading(false)
       });
   }, []);
 
   const fetchAllSubscriptions = () => {
+    setLoading(true)
     fetch('/api/subscriptions/list')
       .then((res) => res.json())
       .then((data) => {
         console.log('Success:', data);
         setSubscriptions(data.subscriptions);
+        setLoading(false)
       });
   };
 
@@ -125,15 +131,18 @@ const Subscriptions = () => {
       });
   };
   const activateSubscription = (id) => {
+    setLoading(true)
     fetch(`/api/subscriptions/activate?id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.log('Success:', data);
         fetchAllSubscriptions();
+        setLoading(false)
       });
   };
 
   const subscribeUser = () => {
+    setLoading(true)
     const data = {
       user: selectedUser,
       partner: selectedPartner,
@@ -155,25 +164,30 @@ const Subscriptions = () => {
         console.log('Success:', data);
         fetchAllSubscriptions();
         setShowCongratulationsModal(true);
+        setLoading(false)
       });
   };
 
   const deleteSubscription = (id) => {
+    setLoading(true)
     fetch(`/api/subscriptions/delete?id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.log('Success:', data);
         console.log('Success:', data.data.subscriptions);
         setSubscriptions(data.data.subscriptions);
+        setLoading(false)
       });
   };
 
-  const findAllSubscritionsWhereUserIsTheSame = (id) => {   
+  const findAllSubscritionsWhereUserIsTheSame = (id) => {  
+    setLoading(true) 
     fetch(`/api/subscriptions/findall?id=${id}`)
     .then((res) => res.json())
     .then((data) => {
       console.log('Success:', data);
       setSubscriptions(data.subscriptions);
+      setLoading(false)
     });
   }
 
@@ -182,12 +196,19 @@ const Subscriptions = () => {
       <div className='min-h-screen bg-gray-50 p-8'>
         <div className='container mx-auto'>
           <h1 className='text-3xl font-semibold mb-4'>Subscriptions</h1>
-          <button
-            className='bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4'
-            onClick={handleAddSubscription}
-          >
-            Add New Subscription
-          </button>
+          <div className='flex flex-row gap-3 mb-4'>
+            <Button color="failure" onClick={handleAddSubscription}>
+              {loading && (
+                <Spinner
+                  aria-label='Alternate spinner button example'
+                  size='sm'
+                />
+              )}
+              <span className='pl-3 pr-3'>
+                {loading ? 'Loading...' : 'Add New Subscription'}
+              </span>
+            </Button>
+          </div>
           <table className='w-full bg-gray-100 rounded-lg overflow-hidden mb-4'>
             {/* Table headers */}
             <thead className='bg-gray-200 text-gray-700'>

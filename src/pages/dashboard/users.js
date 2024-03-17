@@ -4,11 +4,13 @@ import { AiFillEdit, AiOutlineDelete } from 'react-icons/ai';
 import { RiUserUnfollowLine, RiUserFollowLine } from 'react-icons/ri';
 import Layout from '@/components/layout';
 import { Dropdown } from 'flowbite-react';
+import { Button, Spinner } from 'flowbite-react';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,17 +23,22 @@ const UsersPage = () => {
 
   useEffect(() => {
     // Fetch users from /api/users/list
+    setLoading(true);
     axios
       .get('/api/users/list')
       .then((response) => {
         setUsers(response.data.users);
+        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching users:', error);
+        setLoading(true);
       });
   }, []);
 
   const handleToggleStatus = (id, status) => {
+    setLoading(true);
+
     // Toggle user status (suspend or activate) based on current status
     const endpoint =
       status === 'suspended'
@@ -45,22 +52,32 @@ const UsersPage = () => {
         // Update user status in the UI
         console.log('response:', response);
         setUsers(response.data.data.users);
+        setLoading(false);
+
       })
       .catch((error) => {
         console.error('Error toggling user status:', error);
+        setLoading(false);
+
       });
   };
 
   const handleDeleteUser = (id) => {
     // Delete user with the specified ID
+    setLoading(true);
+
     axios
       .get(`/api/users/delete?id=${id}`)
       .then((response) => {
         // Remove the deleted user from the UI
         setUsers(response.data.data.users);
+        setLoading(false);
+
       })
       .catch((error) => {
         console.error('Error deleting user:', error);
+        setLoading(false);
+
       });
   };
 
@@ -94,6 +111,8 @@ const UsersPage = () => {
   };
 
   const handleSaveUser = (e) => {
+    setLoading(true);
+
     // Save user details
     // If user ID exists, it's an edit, otherwise, it's a new user
     e.preventDefault()
@@ -110,9 +129,13 @@ const UsersPage = () => {
           );
         setShowModal(false);
         setSelectedUser(null);
+        setLoading(false);
+
       })
       .catch((error) => {
         console.error('Error saving user:', error);
+        setLoading(false);
+
       });
   };
  console.log("selectedUser", selectedUser)
@@ -121,12 +144,19 @@ const UsersPage = () => {
       <div className='min-h-screen bg-gray-50 p-8'>
         <div className='container mx-auto'>
           <h1 className='text-3xl font-semibold mb-4'>Users</h1>
-          <button
-            className='bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4'
-            onClick={handleAddUser}
-          >
-            Add New User
-          </button>
+          <div className='mb-4 w-44'>
+            <Button color="failure" onClick={handleAddUser}>
+              {loading && (
+                <Spinner
+                  aria-label='Alternate spinner button example'
+                  size='sm'
+                />
+              )}
+              <span className='pl-3 pr-3'>
+                {loading ? 'Loading...' : 'Add new user'}
+              </span>
+            </Button>
+          </div>
           <table className='w-full bg-gray-100 rounded-lg overflow-hidden mb-4'>
             <thead className='bg-gray-200 text-gray-700'>
               <tr>
