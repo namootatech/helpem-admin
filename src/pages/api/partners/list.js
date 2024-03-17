@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         const db = client.db(process.env.NEXT_PUBLIC_SELECTED_DB);
         const collection = db.collection("partners");
         const partners = await collection.find().toArray();
-        console.log("partners", partners);
+
         res.status(200).json({partners});
         }
         else {

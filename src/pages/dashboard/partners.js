@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '@/components/layout';
+import { Dropdown } from 'flowbite-react';
+import { AiFillEdit, AiOutlineDelete } from 'react-icons/ai';
+import { RiUserUnfollowLine, RiUserFollowLine } from 'react-icons/ri';
 
 export default function PartnersPage() {
   const [partners, setPartners] = useState([]);
@@ -10,23 +13,37 @@ export default function PartnersPage() {
     slug: '',
     link: '',
   });
+  const [selectedPartner, setSelectedPartner] = useState(null);
 
   useEffect(() => {
     fetchPartners();
   }, []);
 
   const fetchPartners = async () => {
+    console.log('fetching partners')
     try {
       const response = await axios.get('/api/partners/list');
+      console.log('response:', response.data.partners);
       setPartners(response.data.partners);
     } catch (error) {
       console.error('Error fetching partners:', error);
     }
   };
 
+  const saveEdit = async () => {
+    try {
+      await axios.post('/api/partners/edit', selectedPartner);
+      fetchPartners();
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error editing partner:', error);
+    }
+  };
+
   const handleAddPartner = async () => {
     try {
-      await axios.post('/api/partners/add', newPartnerData);
+      const endpoint = newPartnerData._id ? `/api/partners/edit` : '/api/partners/add';
+      await axios.post(endpoint, newPartnerData);
       fetchPartners();
       handleCloseModal();
     } catch (error) {
@@ -34,12 +51,41 @@ export default function PartnersPage() {
     }
   };
 
-  const handleEditPartner = (partnerId) => {
-    // Implement edit functionality
+  const handleEditPartner = (partner) => {
+    setSelectedPartner(partner);
+    setNewPartnerData(partner);
+    setShowModal(true);
   };
 
   const handleSuspendPartner = (partnerId) => {
-    // Implement suspend functionality
+    try {
+      console.log("supsneing partner", partnerId)
+      axios.get(`/api/partners/suspend?id=${partnerId}`);
+      console.log('suspended success:', partnerId);
+      fetchPartners();
+    } catch (error) {
+      console.error('Error suspending partner:', error);
+    }
+  };
+
+  const handleDeletePartner = (partnerId) => {
+    try {
+      axios.get(`/api/partners/delete?id=${partnerId}`);
+      console.log('deleted success:', partnerId);
+      fetchPartners();
+    } catch (error) {
+      console.error('Error suspending partner:', error);
+    }
+  };
+
+  const handleActivatePartner = (partnerId) => {
+    try {
+      axios.get(`/api/partners/activate?id=${partnerId}`);
+      console.log('deleted success:', partnerId);
+      fetchPartners();
+    } catch (error) {
+      console.error('Error suspending partner:', error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -74,10 +120,11 @@ export default function PartnersPage() {
       <table className="w-full bg-gray-200 rounded-md">
         <thead>
           <tr>
-            <th className="py-4 border border-gray-100 px-4">Name</th>
-            <th className="py-4 border border-gray-100 px-4">Slug</th>
-            <th className="py-4 border border-gray-100 px-4">Link</th>
-            <th className="py-4 border border-gray-100 px-4">Actions</th>
+            <th className="text-left py-4 border border-gray-100 px-4">Name</th>
+            <th className="text-left py-4 border border-gray-100 px-4">Slug</th>
+            <th className="text-left py-4 border border-gray-100 px-4">Link</th>
+            <th className="text-left py-4 border border-gray-100 px-4">Suspended</th>
+            <th className="text-left py-4 border border-gray-100 px-4">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -85,12 +132,38 @@ export default function PartnersPage() {
             <tr key={partner.id} className="hover:bg-gray-300">
               <td className="py-2 border border-gray-100 px-4">{partner.name}</td>
               <td className="py-2 border border-gray-100 px-4">{partner.slug}</td>
-              <td className="py-2 border border-gray-100 px-4">{partner.link}</td>
+              <td className="py-2 border border-gray-100 px-4 text-blue-500"><a href={partner.link} target='_blank'>{partner.link}</a></td>
+              <td className="py-2 border border-gray-100 px-4">{partner.status === "suspended" ? 'Yes' : 'No'}</td>
               <td className="py-2 border border-gray-100 px-4">
-                <button onClick={() => handleEditPartner(partner.id)} className="mr-2 bg-red-800 py-1 px-4 white-text text-white rounded rounded-lg">
-                  Edit
-                </button>
-                <button onClick={() => handleSuspendPartner(partner.id)} className='bg-gray-800 py-1 px-4 white-text text-white rounded rounded-lg'>Suspend</button>
+               <Dropdown label='Actions'>
+                      <Dropdown.Item
+                        icon={
+                          partner.status === 'suspended'
+                            ? RiUserFollowLine
+                            : RiUserUnfollowLine
+                        }
+                        onClick={
+                          partner.status === 'suspended'
+                            ? () => handleActivatePartner(partner._id)
+                            : () => handleSuspendPartner(partner._id)
+                        }
+                      >
+                        {partner.status === 'suspended' ? 'Activate' : 'Suspend'}
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        icon={AiFillEdit}
+                        onClick={() =>handleEditPartner(partner)}
+                      >
+                        Edit{' '}
+                      </Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Item
+                        icon={AiOutlineDelete}
+                        onClick={() => handleDeletePartner(partner._id)}
+                      >
+                        Delete
+                      </Dropdown.Item>
+                    </Dropdown>
               </td>
             </tr>
           ))}
@@ -98,36 +171,39 @@ export default function PartnersPage() {
       </table>
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-8 rounded-md shadow-md">
+          <div className="bg-white p-8 rounded-md shadow-md w-96">
             <h2 className="text-xl font-semibold mb-4">Add New Partner</h2>
             <div className="mb-4">
-              <label className="block mb-2">Name:</label>
+              <label className="block mb-2">Name</label>
               <input
                 type="text"
                 name="name"
                 value={newPartnerData.name}
                 onChange={handleInputChange}
-                className="w-full border rounded-md py-2 px-3"
+                className="w-full border rounded-md py-2 px-3 text-sm"
+                placeholder='Enter partner name e.g Example Donations'
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Slug:</label>
+              <label className="block mb-2">Slug</label>
               <input
                 type="text"
                 name="slug"
                 value={newPartnerData.slug}
                 onChange={handleInputChange}
-                className="w-full border rounded-md py-2 px-3"
+                className="w-full border rounded-md py-2 px-3 text-sm"
+                placeholder='Enter partner slug e.g example-donations'
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Link:</label>
+              <label className="block mb-2">Link</label>
               <input
                 type="text"
                 name="link"
                 value={newPartnerData.link}
                 onChange={handleInputChange}
-                className="w-full border rounded-md py-2 px-3"
+                placeholder='Enter partner link e.g example.com'
+                className="w-full border rounded-md py-2 px-3 text-sm"
               />
             </div>
             <div className="flex justify-end">
