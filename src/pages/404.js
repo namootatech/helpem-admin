@@ -4,7 +4,7 @@ const Custom404 = () => {
   return (
     <Layout>
         <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50'>
-      <div className='w-64 h-64 mb-8 lex flex-col items-center justify-center'>
+      <div className='w-64 h-64 mb-8 flex flex-col items-center justify-center'>
         <div className='text-6xl font-bold text-red-500'>404</div>
       </div>
       <h1 className='text-3xl font-semibold mb-4'>Oops! Page Not Found</h1>
