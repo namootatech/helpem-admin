@@ -42,9 +42,9 @@ const Layout = ({ children, saveUser }) => {
         <meta http-equiv="content-language" content="en"/>
         <meta property='og:url' content='https://admin.helpem.co.za' />
         <link rel='icon' href='/favicon.ico' />
-        <link rel='icon' href={`/favicon/apple-touch-icon.png`} sizes='any' />
-        <link rel='icon' href={`/favicon/favicon-32x32.png`} sizes='any' />
-        <link rel='icon' href={`/favicon/favicon-16x16.png`} sizes='any' />
+        <link rel='icon' href={`/apple-touch-icon.png`} sizes='any' />
+        <link rel='icon' href={`/favicon-32x32.png`} sizes='any' />
+        <link rel='icon' href={`/favicon-16x16.png`} sizes='any' />
         <link
           rel='icon'
           href={`/favicon/android-chrome-512x512.png`}
