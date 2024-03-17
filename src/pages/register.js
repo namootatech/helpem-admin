@@ -52,7 +52,7 @@ export default function RegisterPage() {
       .then((res) => res.json())
       .then((data) => {
         console.log('Success:', data);
-        //router.push('/login');
+        router.push('/login');
       })
       .catch((error) => {
         console.error('Error:', error);

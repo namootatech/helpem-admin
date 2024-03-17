@@ -1,48 +1,42 @@
 import Navigation from "../navigation";
 import Footer from "@/components/footer";
-import { use } from "marked";
+
 import Head from 'next/head'
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { getThemeConfig } from "@/themes"
+import Cookies from "js-cookie";
 
+const Layout = ({ children, saveUser }) => {
 
-const Layout = ({ children, saveTheme, theme }) => {
   useEffect(() => {
-    saveTheme(getThemeConfig());
+    const user = Cookies.get('user');
+    if (user) {
+      const data = JSON.parse(user);
+      saveUser(data);
+    }
   }, []);
 
   return (
     <div>
-      {theme && (
-        <>
           <Head>
-            <title>{theme?.partnerName}</title>
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/favicon.ico`} sizes="any" />
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/apple-touch-icon.png`} sizes="any" />
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/favicon-32x32.png`} sizes="any" />
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/favicon-16x16.png`} sizes="any" />
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/android-chrome-512x512.png`} sizes="any" />
-            <link rel="icon" href={`/images/${theme?.themeName}/favicon/android-chrome-192x192.png`} sizes="any" />
-          </Head>
+            <title>Helpem Admin | Home</title>
+            </Head>
           <Navigation />
-          <main className="container mx-auto mt-20">{children}</main>
+          <main>{children}</main>
           <Footer />
-        </>
-      )}
     </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    theme: state.theme
+    user: state.auth
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    saveTheme: (theme) => dispatch({ type: 'SAVE_THEME', payload: theme })
+    saveUser: (user) => dispatch({ type: 'LOGIN', payload: user })
   }
 };
 

@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         const hash = await bcrypt.hash(data.password, 10);
         data = {
             ...data,
-            password: hash,
+            hash,
             joinDate: new Date(),
         };
         const result = await collection.insertOne(data);

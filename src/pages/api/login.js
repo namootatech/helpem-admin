@@ -34,6 +34,6 @@ export default async function handler(req, res) {
         }
     } catch (e) {
         console.log(e)
-        res.status(405).json({ message: "Something went wrong", error: e });
+        res.status(405).json({ message: "Something went wrong", error: true, e });
     }
 }

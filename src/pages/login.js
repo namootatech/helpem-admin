@@ -4,8 +4,10 @@ import { faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-s
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
+import Cookies from 'js-cookie';
 
 function Login({login}) {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -47,6 +49,7 @@ function Login({login}) {
         console.log('Success:', data);
         // Redirect to dashboard
         login(data);
+        Cookies.set('user', JSON.stringify(data));
         router.push('/dashboard');
       })
       .catch((error) => {
