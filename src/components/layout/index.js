@@ -47,12 +47,12 @@ const Layout = ({ children, saveUser }) => {
         <link rel='icon' href={`/favicon-16x16.png`} sizes='any' />
         <link
           rel='icon'
-          href={`/favicon/android-chrome-512x512.png`}
+          href={`/android-chrome-512x512.png`}
           sizes='any'
         />
         <link
           rel='icon'
-          href={`/favicon/android-chrome-192x192.png`}
+          href={`/android-chrome-192x192.png`}
           sizes='any'
         />
       </Head>
