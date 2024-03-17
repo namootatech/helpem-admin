@@ -37,7 +37,6 @@ const Layout = ({ children, saveUser }) => {
         <meta name='og:title' content='Helpem Admin' />
         <meta name='og:description' content='Helpem Admin Dashboard' />
         <meta name='robots' content='follow' />
-        <meta http-equiv='refresh' content='5' />
         <meta charset="UTF-8"/>
         <meta http-equiv="content-language" content="en"/>
         <meta property='og:url' content='https://admin.helpem.co.za' />
