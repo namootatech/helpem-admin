@@ -48,28 +48,26 @@ export default function Dashboard() {
               className='bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-center'
               onClick={() => router.push('/dashboard/partners')}
             >
-              <FontAwesomeIcon icon={faUserFriends} className='mr-2' />
+              {/* <FontAwesomeIcon icon={faUserFriends} size="1rem" className='mr-2' /> */}
               Partners
             </button>
             <button
               className='bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-center'
               onClick={() => router.push('/dashboard/subscriptions')}
             >
-              <FontAwesomeIcon icon={faChartBar} className='mr-2' />
+              {/* <FontAwesomeIcon icon={faChartBar} size="1rem" className='mr-2' /> */}
               Subscriptions
             </button>
             <button
               className='bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-center'
               onClick={() => router.push('/dashboard/transactions')}
             >
-              <FontAwesomeIcon icon={faMoneyBillWave} className='mr-2' />
               Transactions
             </button>
             <button
               className='bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-center'
               onClick={() => router.push('/dashboard/users')}
             >
-              <FontAwesomeIcon icon={faUsers} className='mr-2' />
               Users
             </button>
           </div>
